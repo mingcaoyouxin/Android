@@ -23,6 +23,8 @@ public class QuizActivity extends ActionBarActivity {
     private ImageButton mPrevButton;
     private ImageButton mNextButton;
 
+    private static final String CHEATER="cheater";
+    private boolean[] mIsCheater=new boolean[5];//是否欺骗
     private TextView mQuestionTextView;
     private TrueFalse[] mAnswerKey=new TrueFalse[]{
             new TrueFalse(R.string.question_africa,false),
@@ -76,6 +78,7 @@ public class QuizActivity extends ActionBarActivity {
                 mCurrentQuestionIndex--;
                 if (mCurrentQuestionIndex==-1)
                     mCurrentQuestionIndex=mAnswerKey.length-1;
+                //mIsCheater=false;
                 updateQuestion();
 
             }
@@ -85,6 +88,7 @@ public class QuizActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 mCurrentQuestionIndex=(++mCurrentQuestionIndex)%mAnswerKey.length;
+                //mIsCheater=false;
                 updateQuestion();
             }
         });
@@ -101,15 +105,18 @@ public class QuizActivity extends ActionBarActivity {
         mCheatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i=new Intent(QuizActivity.this,CheatActivity.class);
+                Intent i=new Intent(QuizActivity.this,CheatActivity.class);//创建intent
                 boolean isTrue=mAnswerKey[mCurrentQuestionIndex].isTrueQuestion();//获取当前答案是否正确，传递给extra
-                i.putExtra(EXTRA_ANSWER_IS_TRUE,isTrue);
-                startActivity(i);
+                i.putExtra(EXTRA_ANSWER_IS_TRUE, isTrue);//保存extra信息
+                //startActivity(i);//启动cheatActivity，但是不需要子Activity的返回结果
+                startActivityForResult(i,0);//需要子Activity的返回结果，因为这里QuizActivity只会启动一个Activity，所以具体发送什么信息都无所谓，这里requestCode设为0即可
             }
         });
 
-        if(savedInstanceState!=null)
+        if(savedInstanceState!=null) {
             mCurrentQuestionIndex=savedInstanceState.getInt(KEY_INDEX,0);
+            mIsCheater=savedInstanceState.getBooleanArray(CHEATER);
+        }
         updateQuestion();//初始时候首先出来一个问题
     }
 
@@ -117,10 +124,14 @@ public class QuizActivity extends ActionBarActivity {
     protected void checkAnswer(boolean userPressedTrue){
         boolean answerIsTrue=mAnswerKey[mCurrentQuestionIndex].isTrueQuestion();//问题的标准答案
         int messageResId = 0;
-        if(userPressedTrue==answerIsTrue)
-            messageResId = R.string.correct_toast;
-        else
-            messageResId=R.string.incorrect_toast;
+        if(mIsCheater[mCurrentQuestionIndex])
+            messageResId=R.string.judgement_toast;
+        else{
+            if(userPressedTrue==answerIsTrue)
+                messageResId = R.string.correct_toast;
+            else
+                messageResId=R.string.incorrect_toast;
+        }
         Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
     }
 
@@ -163,8 +174,19 @@ public class QuizActivity extends ActionBarActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState){
         super.onSaveInstanceState(savedInstanceState);
-        Log.i(TAG,"onSaveInstanceState");
-        savedInstanceState.putInt(KEY_INDEX,mCurrentQuestionIndex);
+        Log.i(TAG, "onSaveInstanceState");
+        savedInstanceState.putInt(KEY_INDEX, mCurrentQuestionIndex);
+        savedInstanceState.putBooleanArray(CHEATER,mIsCheater);//保存一个数组，这个数组包括每个题目是否欺骗
+    }
+
+    //获取子Activity——CheatActivity返回的信息
+    @Override
+    protected void onActivityResult(int requestCode,int resultCode, Intent data){
+        if(data==null)
+            return;
+        boolean cheater;
+        cheater=data.getBooleanExtra(CheatActivity.EXTRA_ANSWER_SHOWN,false);
+        mIsCheater[mCurrentQuestionIndex]=cheater;//设置当前题目是否欺骗
     }
 
     @Override
