@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/FirstApp.iml" filepath="$PROJECT_DIR$/FirstApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/criminalintent/criminalintent.iml" filepath="$PROJECT_DIR$/criminalintent/criminalintent.iml" />
       <module fileurl="file://$PROJECT_DIR$/geoquiz/geoquiz.iml" filepath="$PROJECT_DIR$/geoquiz/geoquiz.iml" />
       <module fileurl="file://$PROJECT_DIR$/geoquiz1.0/geoquiz1.0.iml" filepath="$PROJECT_DIR$/geoquiz1.0/geoquiz1.0.iml" />
       <module fileurl="file://$PROJECT_DIR$/test/test.iml" filepath="$PROJECT_DIR$/test/test.iml" />
