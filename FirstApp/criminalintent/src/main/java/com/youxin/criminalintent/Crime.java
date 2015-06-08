@@ -16,7 +16,7 @@ public class Crime {
     private boolean mSolved;
 
     public String getDate() {
-        CharSequence date = new String("EEEE,MMM dd,yyyy");
+        CharSequence date = new String("yyyy年MM月dd日 kk时mm分 E");
         return DateFormat.format(date, mDate).toString();
     }
 

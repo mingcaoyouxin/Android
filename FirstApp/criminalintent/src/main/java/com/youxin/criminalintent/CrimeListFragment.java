@@ -1,5 +1,6 @@
 package com.youxin.criminalintent;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 public class CrimeListFragment extends ListFragment {
     private ArrayList<Crime> mCrimes;
     private static final String TAG = "CrimeListFragment";
+    private static final int REQUEST_CRIME=1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,15 @@ public class CrimeListFragment extends ListFragment {
 
     }
 
+    //当由详细信息返回时，详细列表更新的内容，要返回给列表
+    @Override
+    public void onResume(){
+        super.onResume();
+        ((CrimeAdapter)getListAdapter()).notifyDataSetChanged();
+    }
+
+
+
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         //Crime c = (Crime) (getListAdapter()).getItem(position);
@@ -49,10 +60,29 @@ public class CrimeListFragment extends ListFragment {
         Log.d(TAG, c.getTitle() + "was clicked");
 
         //启动activity
-        Intent i=new Intent(getActivity(),CrimeActivity.class);
-        i.putExtra(CrimeFragment.EXTRA_CRIME_ID,c.getId());
+        //Intent i=new Intent(getActivity(),CrimeActivity.class);
+        //使用新的activity
+        Intent i=new Intent(getActivity(),CrimePagerActivity.class);
+        i.putExtra(CrimeFragment.EXTRA_CRIME_ID, c.getId());
         startActivity(i);
     }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode,Intent data){
+        if(resultCode==REQUEST_CRIME){
+
+        }
+    }
+
+    //我们应通知托管activity返回结果值
+    public void returnResult(){
+        getActivity().setResult(Activity.RESULT_OK,null);
+    }
+
+
+
+
 
     private class CrimeAdapter extends ArrayAdapter<Crime> {
         public CrimeAdapter(ArrayList<Crime> crimes) {
